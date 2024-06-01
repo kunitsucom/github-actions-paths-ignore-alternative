@@ -119,7 +119,10 @@ runs:
             LogshWarn "Failed to get diff files. NOT SKIP."
             exit 0
           fi
-          if [[ -z "$(echo "${diff_files:?}" | grep -Ev -f paths-ignore.txt)" ]]; then
+          files_without_paths_ignore=$(echo "${diff_files:?}" | grep -Ev -f paths-ignore.txt)
+          LogshDebug "files_without_paths_ignore:"
+          LogshDebug "${files_without_paths_ignore}"
+          if [[ -z "${files_without_paths_ignore:-}" ]]; then
             LogshInfo "Skip the following steps"
             LogshExec echo "skip=true" >> $GITHUB_OUTPUT
             exit 0
