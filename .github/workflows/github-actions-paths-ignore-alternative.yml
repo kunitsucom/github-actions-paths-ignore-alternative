@@ -16,12 +16,17 @@ jobs:
   github-actions-paths-ignore-alternative:
     runs-on: ubuntu-latest # ref. https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
     steps:
+      - uses: actions/checkout@v4
       - uses: kunitsucom/github-actions-paths-ignore-alternative@7501b065ce2b23a54a3c87797b8a2565851594ca
         id: paths-ignore
         with:
           paths-ignore: |-
             .github/
-          debug: true
-      - name: "Check skip"
+      - name: "if skip!=true"
+        if: ${{ steps.paths-ignore.outputs.skip != 'true' }}
+        run: |
+            echo "paths-ignore.skip: ${{ steps.paths-ignore.outputs.skip }}"
+      - name: "if skip=true"
+        if: ${{ steps.paths-ignore.outputs.skip == 'true' }}
         run: |
             echo "paths-ignore.skip: ${{ steps.paths-ignore.outputs.skip }}"
