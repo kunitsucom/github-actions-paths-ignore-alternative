@@ -120,7 +120,7 @@ runs:
           exit 0
         fi
 
-        if ! diff_files=$(git diff --name-only "${before:?}" "${after:?}"); then
+        if ! diff_files=$(LogshExec git diff --name-only "${before:?}" "${after:?}"); then
           LogshWarn "Failed to get diff files. NOT SKIP."
           exit 0
         fi
