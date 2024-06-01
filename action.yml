@@ -103,7 +103,7 @@ runs:
         # main
         #
         LogshInfo "Create paths-ignore.txt (without comments and empty lines)"
-        grep -v -e "^[[:space:]]*#" -e "^[[:space:]]*$" <<'EOF' | tee paths-ignore.txt
+        (grep -v -e "^[[:space:]]*#" -e "^[[:space:]]*$" <<'EOF' | tee paths-ignore.txt) || true
         ${{ inputs.paths-ignore }}
         EOF
 
