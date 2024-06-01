@@ -20,7 +20,7 @@ jobs:
       - uses: kunitsucom/github-actions-paths-ignore-alternative@349863597636c2bcbaa86ef52a8168bf45b1fbb5
         id: paths-ignore
         with:
-          paths-ignore: |
+          paths-ignore: |-
             .github/
           debug: true
       - name: "Check skip"
