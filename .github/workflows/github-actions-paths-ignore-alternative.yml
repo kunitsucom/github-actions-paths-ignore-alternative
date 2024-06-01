@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest # ref. https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
     steps:
       - uses: actions/checkout@v4
-      - uses: kunitsucom/github-actions-paths-ignore-alternative@95f1226468a952c3f28f2539e15aba187e29a4aa
+      - uses: kunitsucom/github-actions-paths-ignore-alternative@12535718488e723bbf2ff92ced6f1f06ecdc9c6d
         id: paths-ignore
         with:
           paths-ignore: |-
