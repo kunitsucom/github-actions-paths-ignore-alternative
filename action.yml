@@ -87,11 +87,17 @@ runs:
         #
         # inputs
         #
-        LogshInfo " github.event_name: ${{ github.event_name }}"
-        LogshInfo "     inputs.before: ${{ inputs.before }}"
-        LogshInfo "      inputs.after: ${{ inputs.after }}"
-        LogshInfo "   inputs.base-ref: ${{ inputs.base-ref }}"
-        LogshInfo "   inputs.head-ref: ${{ inputs.head-ref }}"
+        LogshInfo "----------------------------------------------------------------"
+        LogshInfo "github:"
+        LogshInfo "  event_name: ${{ github.event_name }}"
+        LogshInfo "  base_ref: ${{ inputs.base-ref }}"
+        LogshInfo "  head_ref: ${{ inputs.head-ref }}"
+        LogshInfo "inputs:"
+        LogshInfo "  before: ${{ inputs.before }}"
+        LogshInfo "  after: ${{ inputs.after }}"
+        LogshInfo "  base-ref: ${{ inputs.base-ref }}"
+        LogshInfo "  head-ref: ${{ inputs.head-ref }}"
+        LogshInfo "----------------------------------------------------------------"
 
         #
         # main
@@ -121,8 +127,8 @@ runs:
 
         if [[ -n "${{ inputs.paths-ignore }}" ]]; then
           files_changed=$(echo "${diff_files:?}" | grep -Ev -f paths-ignore.txt)
-          LogshDebug "files_changed:"
-          LogshDebug "${files_changed:-}"
+          LogshDebug "==> files_changed <=="
+          LogshDebug "${files_changed:-(empty)}"
         else
           LogshInfo "paths-ignore is empty"
           files_changed=$(echo "${diff_files:?}")
