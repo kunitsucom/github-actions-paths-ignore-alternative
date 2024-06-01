@@ -97,7 +97,7 @@ runs:
         # main
         #
         LogshInfo "Create paths-ignore.txt (without comments and empty lines)"
-        grep -v -e "^[[:space:]]*#" -e "^[[:space:]]*$" <<EOF | tee paths-ignore.txt
+        grep -v -e "^[[:space:]]*#" -e "^[[:space:]]*$" <<'EOF' | tee paths-ignore.txt
         ${{ inputs.paths-ignore }}
         EOF
 
@@ -114,30 +114,27 @@ runs:
           exit 0
         fi
 
+        if ! diff_files=$(git diff --name-only "${before:?}" "${after:?}"); then
+          LogshWarn "Failed to get diff files. NOT SKIP."
+          exit 0
+        fi
+
         if [[ -n "${{ inputs.paths-ignore }}" ]]; then
-          if ! diff_files=$(git diff --name-only "${before:?}" "${after:?}"); then
-            LogshWarn "Failed to get diff files. NOT SKIP."
-            exit 0
-          fi
-          if [[ -z "$(echo "${diff_files:?}" | grep -Ev -f paths-ignore.txt)" ]]; then
-            LogshInfo "Skip the following steps"
-            LogshExec echo "skip=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
+          files_changed=$(echo "${diff_files:?}" | grep -Ev -f paths-ignore.txt)
+          LogshDebug "files_changed:"
+          LogshDebug "${files_changed}"
         else
           LogshInfo "paths-ignore is empty"
-          if ! diff_files=$(git diff --name-only "${before:?}" "${after:?}"); then
-            LogshWarn "Failed to get diff files. NOT SKIP."
-            exit 0
-          fi
-          if [[ -z "$(echo "${diff_files:?}")" ]]; then
-            LogshInfo "Skip the following steps"
-            LogshExec echo "skip=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
+          files_changed=$(echo "${diff_files:?}")
+        fi
+
+        if [[ -z "${files_changed:-}" ]]; then
+          LogshInfo "Skip the following steps"
+          LogshExec echo "skip=true" >> $GITHUB_OUTPUT
+          exit 0
         fi
     - name: DEBUG
-      if: a;ways() && ${{ inputs.debug == 'true' }}
+      if: always() && ${{ inputs.debug == 'true' }}
       shell: bash
       run: |
         cat <<'DEBUG_DOC'
