@@ -1,5 +1,5 @@
 name: github-actions-paths-ignore-alternative
-description: 'A Workflow to resolve the incompatibility of the `Require status checks to pass` setting when paths-ignore is set for push triggers and pull_request triggers.'
+description: 'A Workflow to resolve the incompatibility of the `Require status checks to pass` setting when `paths-ignore` is set.'
 author: 'kunitsucom'
 
 branding:
