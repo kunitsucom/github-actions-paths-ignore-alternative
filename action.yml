@@ -123,13 +123,21 @@ runs:
         fi
 
         if [[ -n "${{ inputs.paths-ignore }}" ]]; then
-          if [[ -z "$(git diff --name-only "${before:?}" "${after:?}" | grep -v -f paths-ignore.txt)" ]]; then
+          if ! diff_files=$(git diff --name-only "${before:?}" "${after:?}"); then
+            LogshWarn "Failed to get diff files. NOT SKIP."
+            exit 0
+          fi
+          if [[ -z "$(echo "${diff_files:?}" | grep -v -f paths-ignore.txt)" ]]; then
             LogshInfo "Skip the following steps"
             echo "skip=true" >> $GITHUB_OUTPUT
           fi
         else
           LogshInfo "paths-ignore is empty"
-          if [[ -z "$(git diff --name-only "${before:?}" "${after:?}")" ]]; then
+          if ! diff_files=$(git diff --name-only "${before:?}" "${after:?}"); then
+            LogshWarn "Failed to get diff files. NOT SKIP."
+            exit 0
+          fi
+          if [[ -z "$(echo "${diff_files:?}")" ]]; then
             LogshInfo "Skip the following steps"
             echo "skip=true" >> $GITHUB_OUTPUT
           fi
