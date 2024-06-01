@@ -1,0 +1,32 @@
+name: github-actions-paths-ignore-alternative
+#     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# https://github.com/organization/repository/workflows/github-actions-paths-ignore-alternative/badge.svg
+#                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  github-actions-paths-ignore-alternative:
+    runs-on: ubuntu-latest # ref. https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    steps:
+      - uses: actions/checkout@v4
+      - uses: kunitsucom/github-actions-paths-ignore-alternative@9d7a3b0b06f4eef44454929b5984bd80b8c8f560
+        id: paths-ignore
+        with:
+          paths-ignore: |-
+            .github/
+      - name: "if skip!=true"
+        if: ${{ steps.paths-ignore.outputs.skip != 'true' }}
+        run: |
+            echo "paths-ignore.skip: ${{ steps.paths-ignore.outputs.skip }}"
+      - name: "if skip=true"
+        if: ${{ steps.paths-ignore.outputs.skip == 'true' }}
+        run: |
+            echo "paths-ignore.skip: ${{ steps.paths-ignore.outputs.skip }}"
