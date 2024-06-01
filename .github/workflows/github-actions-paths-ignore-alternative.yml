@@ -23,6 +23,5 @@ jobs:
             .github/
           debug: true
       - name: "Check skip"
-        if: ${{ steps.paths-ignore.outputs.skip == 'true' }}
         run: |
             echo "paths-ignore.skip: ${{ steps.paths-ignore.outputs.skip }}"
