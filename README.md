@@ -1,1 +1,1 @@
-# GitHub Actions paths-ignore Alternative
+# GitHub Actions `paths-ignore` Alternative
