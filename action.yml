@@ -123,7 +123,7 @@ runs:
         diff_files=$(git diff --name-only "${before:?}" "${after:?}") || true
 
         if [[ -n "${{ inputs.paths-ignore }}" ]]; then
-          files_changed=$(echo "${diff_files:?}" | grep -Ev -f paths-ignore.txt)
+          files_changed=$(echo "${diff_files:?}" | grep -Ev -f paths-ignore.txt) || true
           LogshDebug "==> files_changed <=="
           LogshDebug "${files_changed:-(empty)}"
         else
