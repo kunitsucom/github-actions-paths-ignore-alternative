@@ -131,7 +131,7 @@ runs:
           fi
           if [[ -z "$(echo "${diff_files:?}" | grep -v -f paths-ignore.txt)" ]]; then
             LogshInfo "Skip the following steps"
-            echo "skip=true" >> $GITHUB_OUTPUT
+            LogshExec echo "skip=true" >> $GITHUB_OUTPUT
           fi
         else
           LogshInfo "paths-ignore is empty"
@@ -141,6 +141,6 @@ runs:
           fi
           if [[ -z "$(echo "${diff_files:?}")" ]]; then
             LogshInfo "Skip the following steps"
-            echo "skip=true" >> $GITHUB_OUTPUT
+            LogshExec echo "skip=true" >> $GITHUB_OUTPUT
           fi
         fi
