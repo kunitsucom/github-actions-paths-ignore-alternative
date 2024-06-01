@@ -11,7 +11,7 @@ inputs:
   # Common
   #
   paths-ignore:
-    description: 'Substring of paths to ignore (like on.push.paths-ignore) but with regex'
+    description: 'A list of substrings of file paths to ignore written in regular expressions (like on.push.paths-ignore)'
     required: false
     default: ''  # empty string
   skip-checkout:
