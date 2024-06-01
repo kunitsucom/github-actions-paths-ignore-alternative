@@ -17,16 +17,19 @@ jobs:
     runs-on: ubuntu-latest # ref. https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
     steps:
       - uses: actions/checkout@v4
-      - uses: kunitsucom/github-actions-paths-ignore-alternative@04bd8565a565ed4232dfb874c3e78db621a37eaa
+      - uses: kunitsucom/github-actions-paths-ignore-alternative@95f1226468a952c3f28f2539e15aba187e29a4aa
         id: paths-ignore
         with:
           paths-ignore: |-
+            # substrings of file paths to ignore written in regular expressions
             .github/
-      - name: "if skip!=true"
+            .*\.md
+            .*\.log
+      - name: "if not skip"
         if: ${{ steps.paths-ignore.outputs.skip != 'true' }}
         run: |
             echo "paths-ignore.skip: ${{ steps.paths-ignore.outputs.skip }}"
-      - name: "if skip=true"
+      - name: "if skip"
         if: ${{ steps.paths-ignore.outputs.skip == 'true' }}
         run: |
             echo "paths-ignore.skip: ${{ steps.paths-ignore.outputs.skip }}"
