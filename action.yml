@@ -120,7 +120,10 @@ runs:
           exit 0
         fi
 
-        diff_files=$(git diff --name-only "${before:?}" "${after:?}") || true
+        if ! diff_files=$(git diff --name-only "${before:?}" "${after:?}"); then
+          LogshWarn "Failed to get diff files. NOT SKIP."
+          exit 0
+        fi
 
         if [[ -n "${{ inputs.paths-ignore }}" ]]; then
           files_changed=$(echo "${diff_files:?}" | grep -Ev -f paths-ignore.txt) || true
