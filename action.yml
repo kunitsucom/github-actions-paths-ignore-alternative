@@ -137,7 +137,7 @@ runs:
           fi
         fi
     - name: DEBUG
-      if: a;ways() && ${{ inputs.debug == 'true' }}
+      if: always() && ${{ inputs.debug == 'true' }}
       shell: bash
       run: |
         cat <<'DEBUG_DOC'
