@@ -40,11 +40,11 @@ inputs:
   base-ref:
     description: 'The base branch of the repository (pull_request trigger only)'
     required: false
-    default: ${{ github.base_ref }}
+    default: ${{ github.event.pull_request.base.sha }}
   head-ref:
     description: 'The head branch of the pull request (pull_request trigger only)'
     required: false
-    default: ${{ github.head_ref }}
+    default: ${{ github.event.pull_request.head.sha }}
 
 outputs:
   skip:
@@ -122,7 +122,7 @@ runs:
         if [[ -n "${{ inputs.paths-ignore }}" ]]; then
           files_changed=$(echo "${diff_files:?}" | grep -Ev -f paths-ignore.txt)
           LogshDebug "files_changed:"
-          LogshDebug "${files_changed}"
+          LogshDebug "${files_changed:-}"
         else
           LogshInfo "paths-ignore is empty"
           files_changed=$(echo "${diff_files:?}")
