@@ -11,7 +11,7 @@ inputs:
   # Common
   #
   paths-ignore:
-    description: 'Substring of paths to ignore (like on.push.paths-ignore) but with regex'
+    description: 'A list of substrings of file paths to ignore written in regular expressions (like on.push.paths-ignore)'
     required: false
     default: ''  # empty string
   skip-checkout:
@@ -40,11 +40,11 @@ inputs:
   base-ref:
     description: 'The base branch of the repository (pull_request trigger only)'
     required: false
-    default: ${{ github.base_ref }}
+    default: ${{ github.event.pull_request.base.sha }}
   head-ref:
     description: 'The head branch of the pull request (pull_request trigger only)'
     required: false
-    default: ${{ github.head_ref }}
+    default: ${{ github.event.pull_request.head.sha }}
 
 outputs:
   skip:
@@ -87,17 +87,23 @@ runs:
         #
         # inputs
         #
-        LogshInfo " github.event_name: ${{ github.event_name }}"
-        LogshInfo "     inputs.before: ${{ inputs.before }}"
-        LogshInfo "      inputs.after: ${{ inputs.after }}"
-        LogshInfo "   inputs.base-ref: ${{ inputs.base-ref }}"
-        LogshInfo "   inputs.head-ref: ${{ inputs.head-ref }}"
+        LogshInfo "----------------------------------------------------------------"
+        LogshInfo "github:"
+        LogshInfo "  event_name: ${{ github.event_name }}"
+        LogshInfo "  base_ref: ${{ github.base_ref }}"
+        LogshInfo "  head_ref: ${{ github.head_ref }}"
+        LogshInfo "inputs:"
+        LogshInfo "  before: ${{ inputs.before }}"
+        LogshInfo "  after: ${{ inputs.after }}"
+        LogshInfo "  base-ref: ${{ inputs.base-ref }}"
+        LogshInfo "  head-ref: ${{ inputs.head-ref }}"
+        LogshInfo "----------------------------------------------------------------"
 
         #
         # main
         #
         LogshInfo "Create paths-ignore.txt (without comments and empty lines)"
-        grep -v -e "^[[:space:]]*#" -e "^[[:space:]]*$" <<'EOF' | tee paths-ignore.txt
+        (grep -v -e "^[[:space:]]*#" -e "^[[:space:]]*$" <<'EOF' | tee paths-ignore.txt) || true
         ${{ inputs.paths-ignore }}
         EOF
 
@@ -120,9 +126,9 @@ runs:
         fi
 
         if [[ -n "${{ inputs.paths-ignore }}" ]]; then
-          files_changed=$(echo "${diff_files:?}" | grep -Ev -f paths-ignore.txt)
-          LogshDebug "files_changed:"
-          LogshDebug "${files_changed}"
+          files_changed=$(echo "${diff_files:?}" | grep -Ev -f paths-ignore.txt) || true
+          LogshDebug "==> files_changed <=="
+          LogshDebug "${files_changed:-(empty)}"
         else
           LogshInfo "paths-ignore is empty"
           files_changed=$(echo "${diff_files:?}")
