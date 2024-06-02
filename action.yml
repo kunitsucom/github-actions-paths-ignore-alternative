@@ -49,7 +49,7 @@ inputs:
 outputs:
   skip:
     value: ${{ steps.paths-ignore.outputs.skip }}
-    description: 'Skip the following steps'
+    description: 'If no diff, this value is true. Otherwise, this value is empty.'
 
 runs:
   using: composite
