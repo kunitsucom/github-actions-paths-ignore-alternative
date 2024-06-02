@@ -3,6 +3,15 @@
 A workaround workflow to resolve the incompatibility of the `Require status checks to pass` setting when `paths-ignore` is set for push trigger or pull_request trigger in GitHub Actions.
 
 ```yml
+name: example
+
+on:
+  push:
+    # NO paths-ignore
+  pull_request:
+    # NO paths-ignore
+  workflow_dispatch:
+
 jobs:
   paths-ignore:
     runs-on: ubuntu-latest
