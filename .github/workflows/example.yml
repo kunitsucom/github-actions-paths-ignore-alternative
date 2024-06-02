@@ -1,8 +1,3 @@
-# GitHub Actions `paths-ignore` Alternative
-
-A workaround workflow to resolve the incompatibility of the `Require status checks to pass` setting when `paths-ignore` is set for push trigger or pull_request trigger in GitHub Actions.
-
-```yml
 name: example
 
 on:
@@ -18,7 +13,7 @@ jobs:
     outputs:
       skip: ${{ steps.paths-ignore.outputs.skip }}
     steps:
-      - uses: kunitsucom/github-actions-paths-ignore-alternative@main
+      - uses: kunitsucom/github-actions-paths-ignore-alternative@9ab17e7908750e178c1a3a38bb88fc352318c92b
         id: paths-ignore
         with:
           paths-ignore: |-
@@ -42,4 +37,3 @@ jobs:
       - name: "if skip"
         run: |
             echo "needs.paths-ignore.outputs.skip: ${{ needs.paths-ignore.outputs.skip }}"
-```
