@@ -121,7 +121,7 @@ runs:
         fi
 
         if ! diff_files=$(git diff --name-only "${before:?}" "${after:?}"); then
-          LogshWarn "Failed to get diff files. NOT SKIP."
+          LogshWarn "Failed to get diff files. FORCE NOT SKIP."
           exit 0
         fi
 
