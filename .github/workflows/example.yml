@@ -13,7 +13,7 @@ jobs:
     outputs:
       skip: ${{ steps.paths-ignore.outputs.skip }}
     steps:
-      - uses: kunitsucom/github-actions-paths-ignore-alternative@9ab17e7908750e178c1a3a38bb88fc352318c92b
+      - uses: kunitsucom/github-actions-paths-ignore-alternative@c307b6f2d87239f521e8de061700492dd3d3fa36
         id: paths-ignore
         with:
           paths-ignore: |-
