@@ -49,7 +49,7 @@ inputs:
 outputs:
   skip:
     value: ${{ steps.paths-ignore.outputs.skip }}
-    description: 'If no diff, this value is true. Otherwise, this value is empty.'
+    description: "If no diff, this value is 'true'. Otherwise, this value is 'false'."
 
 runs:
   using: composite
@@ -102,6 +102,9 @@ runs:
         #
         # main
         #
+        LogshInfo "Set skip=false as default"
+        LogshExec echo "skip=false" >> $GITHUB_OUTPUT
+
         LogshInfo "Create paths-ignore.txt (without comments and empty lines)"
         (grep -v -e "^[[:space:]]*#" -e "^[[:space:]]*$" <<'EOF' | tee paths-ignore.txt) || true
         ${{ inputs.paths-ignore }}
