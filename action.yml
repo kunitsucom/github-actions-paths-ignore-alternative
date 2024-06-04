@@ -1,5 +1,6 @@
 name: github-actions-paths-ignore-alternative
-description: 'A workaround workflow to resolve the incompatibility of the `Require status checks to pass` setting when `paths-ignore` is set.'
+# MEMO: Description must be less than 125 characters.
+description: 'A workaround workflow to resolve the incompatibility of `Require status checks to pass` setting when `paths-ignore` is set.'
 author: 'kunitsucom'
 
 branding:
