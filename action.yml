@@ -109,9 +109,6 @@ runs:
         #
         # main
         #
-        LogshInfo "Set skip=false as default"
-        LogshExec echo "skip=false" >> $GITHUB_OUTPUT
-
         LogshInfo "Create paths.txt (without comments and empty lines)"
         (grep -v -e "^[[:space:]]*#" -e "^[[:space:]]*$" <<'EOF' | tee paths.txt) || true
         ${{ inputs.paths }}
@@ -141,22 +138,21 @@ runs:
         fi
         LogshDebug "==> files_changed <=="
         LogshDebug "${files_changed:-(empty)}"
-        LogshDebug "---------------------"
 
         if [[ -n "${{ inputs.paths }}" ]] && [[ -n "${{ inputs.paths-ignore }}" ]]; then
           LogshWarn "Both paths and paths-ignore are set. paths takes precedence."
         fi
 
         if [[ -n "${{ inputs.paths }}" ]]; then
+          LogshInfo "Apply paths"
           files_changed=$(echo "${files_changed:?}" | grep -E -f paths.txt) || true
           LogshDebug "==> files_changed (applied paths) <=="
           LogshDebug "${files_changed:-(empty)}"
-          LogshDebug "-------------------------------------"
         elif [[ -n "${{ inputs.paths-ignore }}" ]]; then
+          LogshInfo "Apply paths-ignore"
           files_changed=$(echo "${files_changed:?}" | grep -Ev -f paths-ignore.txt) || true
           LogshDebug "==> files_changed (applied paths-ignore) <=="
           LogshDebug "${files_changed:-(empty)}"
-          LogshDebug "--------------------------------------------"
         else
           LogshWarn "paths and paths-ignore are not set."
           files_changed=$(echo "${files_changed:?}")
