@@ -15,6 +15,10 @@ inputs:
     description: 'A list of substrings of file paths to ignore written in regular expressions (like on.push.paths-ignore)'
     required: false
     default: ''  # empty string
+  paths:
+    description: 'A list of substrings of file paths to include written in regular expressions (like on.push.paths)'
+    required: false
+    default: ''  # empty string
   skip-checkout:
     description: 'If true, skip the checkout step'
     required: false
@@ -111,6 +115,11 @@ runs:
         ${{ inputs.paths-ignore }}
         EOF
 
+        LogshInfo "Create paths.txt (without comments and empty lines)"
+        (grep -v -e "^[[:space:]]*#" -e "^[[:space:]]*$" <<'EOF' | tee paths.txt) || true
+        ${{ inputs.paths }}
+        EOF
+
         if [[ "${{ github.event_name }}" == 'push' ]]; then
           LogshInfo "${{ github.event_name }} event"
           before="${{ inputs.before }}"
@@ -124,18 +133,27 @@ runs:
           exit 0
         fi
 
-        if ! diff_files=$(git diff --name-only "${before:?}" "${after:?}"); then
+        if ! files_changed=$(git diff --name-only "${before:?}" "${after:?}"); then
           LogshWarn "Failed to get diff files. FORCE NOT SKIP."
           exit 0
         fi
 
         if [[ -n "${{ inputs.paths-ignore }}" ]]; then
-          files_changed=$(echo "${diff_files:?}" | grep -Ev -f paths-ignore.txt) || true
+          files_changed=$(echo "${files_changed:?}" | grep -Ev -f paths-ignore.txt) || true
           LogshDebug "==> files_changed <=="
           LogshDebug "${files_changed:-(empty)}"
         else
           LogshInfo "paths-ignore is empty"
-          files_changed=$(echo "${diff_files:?}")
+          files_changed=$(echo "${files_changed:?}")
+        fi
+
+        if [[ -n "${{ inputs.paths }}" ]]; then
+          files_changed=$(echo "${files_changed:?}" | grep -E -f paths.txt) || true
+          LogshDebug "==> files_changed <=="
+          LogshDebug "${files_changed:-(empty)}"
+        else
+          LogshInfo "paths is empty"
+          files_changed=$(echo "${files_changed:?}")
         fi
 
         if [[ -z "${files_changed:-}" ]]; then
