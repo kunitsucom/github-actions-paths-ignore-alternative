@@ -109,16 +109,6 @@ runs:
         #
         # main
         #
-        LogshInfo "Create paths.txt (without comments and empty lines)"
-        (grep -v -e "^[[:space:]]*#" -e "^[[:space:]]*$" <<'EOF' | tee paths.txt) || true
-        ${{ inputs.paths }}
-        EOF
-
-        LogshInfo "Create paths-ignore.txt (without comments and empty lines)"
-        (grep -v -e "^[[:space:]]*#" -e "^[[:space:]]*$" <<'EOF' | tee paths-ignore.txt) || true
-        ${{ inputs.paths-ignore }}
-        EOF
-
         if [[ "${{ github.event_name }}" == 'push' ]]; then
           LogshInfo "${{ github.event_name }} event"
           before="${{ inputs.before }}"
@@ -131,6 +121,16 @@ runs:
           LogshInfo "${{ github.event_name }} event. NOT SKIP."
           exit 0
         fi
+
+        LogshDebug "Create paths.txt (without comments and empty lines)"
+        (grep -v -e "^[[:space:]]*#" -e "^[[:space:]]*$" <<'EOF' | tee paths.txt) || true
+        ${{ inputs.paths }}
+        EOF
+
+        LogshDebug "Create paths-ignore.txt (without comments and empty lines)"
+        (grep -v -e "^[[:space:]]*#" -e "^[[:space:]]*$" <<'EOF' | tee paths-ignore.txt) || true
+        ${{ inputs.paths-ignore }}
+        EOF
 
         if ! files_changed=$(git diff --name-only "${before:?}" "${after:?}"); then
           LogshWarn "Failed to get diff files. FORCE NOT SKIP."
