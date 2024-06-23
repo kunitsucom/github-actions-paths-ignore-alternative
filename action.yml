@@ -137,11 +137,15 @@ runs:
           LogshWarn "Failed to get diff files. FORCE NOT SKIP."
           exit 0
         fi
+        LogshDebug "==> files_changed <=="
+        LogshDebug "${files_changed:-(empty)}"
+        LogshDebug "---------------------"
 
         if [[ -n "${{ inputs.paths-ignore }}" ]]; then
           files_changed=$(echo "${files_changed:?}" | grep -Ev -f paths-ignore.txt) || true
-          LogshDebug "==> files_changed <=="
+          LogshDebug "==> files_changed (applied paths-ignore) <=="
           LogshDebug "${files_changed:-(empty)}"
+          LogshDebug "--------------------------------------------"
         else
           LogshInfo "paths-ignore is empty"
           files_changed=$(echo "${files_changed:?}")
@@ -149,8 +153,9 @@ runs:
 
         if [[ -n "${{ inputs.paths }}" ]]; then
           files_changed=$(echo "${files_changed:?}" | grep -E -f paths.txt) || true
-          LogshDebug "==> files_changed <=="
+          LogshDebug "==> files_changed (applied paths) <=="
           LogshDebug "${files_changed:-(empty)}"
+          LogshDebug "-------------------------------------"
         else
           LogshInfo "paths is empty"
           files_changed=$(echo "${files_changed:?}")
