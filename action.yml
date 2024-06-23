@@ -66,6 +66,8 @@ runs:
     - name: github-actions-paths-ignore-alternative
       id: paths-ignore
       shell: 'bash'
+      env:
+        LOGSH_COLOR: 'true'
       run: |
         # LICENSE: https://github.com/kunitsucom/log.sh/blob/HEAD/LICENSE
         # Common
