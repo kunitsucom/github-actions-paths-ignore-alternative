@@ -11,6 +11,10 @@ inputs:
   #
   # Common
   #
+  paths:
+    description: 'A list of substrings of file paths to include written in regular expressions (like on.push.paths)'
+    required: false
+    default: ''  # empty string
   paths-ignore:
     description: 'A list of substrings of file paths to ignore written in regular expressions (like on.push.paths-ignore)'
     required: false
@@ -62,6 +66,8 @@ runs:
     - name: github-actions-paths-ignore-alternative
       id: paths-ignore
       shell: 'bash'
+      env:
+        LOGSH_COLOR: 'true'
       run: |
         # LICENSE: https://github.com/kunitsucom/log.sh/blob/HEAD/LICENSE
         # Common
@@ -103,14 +109,6 @@ runs:
         #
         # main
         #
-        LogshInfo "Set skip=false as default"
-        LogshExec echo "skip=false" >> $GITHUB_OUTPUT
-
-        LogshInfo "Create paths-ignore.txt (without comments and empty lines)"
-        (grep -v -e "^[[:space:]]*#" -e "^[[:space:]]*$" <<'EOF' | tee paths-ignore.txt) || true
-        ${{ inputs.paths-ignore }}
-        EOF
-
         if [[ "${{ github.event_name }}" == 'push' ]]; then
           LogshInfo "${{ github.event_name }} event"
           before="${{ inputs.before }}"
@@ -124,24 +122,48 @@ runs:
           exit 0
         fi
 
-        if ! diff_files=$(git diff --name-only "${before:?}" "${after:?}"); then
+        LogshDebug "Create paths.txt (without comments and empty lines)"
+        (grep -v -e "^[[:space:]]*#" -e "^[[:space:]]*$" <<'EOF' | tee paths.txt) || true
+        ${{ inputs.paths }}
+        EOF
+
+        LogshDebug "Create paths-ignore.txt (without comments and empty lines)"
+        (grep -v -e "^[[:space:]]*#" -e "^[[:space:]]*$" <<'EOF' | tee paths-ignore.txt) || true
+        ${{ inputs.paths-ignore }}
+        EOF
+
+        if ! files_changed=$(git diff --name-only "${before:?}" "${after:?}"); then
           LogshWarn "Failed to get diff files. FORCE NOT SKIP."
           exit 0
         fi
+        LogshDebug "==> files_changed <=="
+        LogshDebug "${files_changed:-(empty)}"
 
-        if [[ -n "${{ inputs.paths-ignore }}" ]]; then
-          files_changed=$(echo "${diff_files:?}" | grep -Ev -f paths-ignore.txt) || true
-          LogshDebug "==> files_changed <=="
+        if [[ -n "${{ inputs.paths }}" ]] && [[ -n "${{ inputs.paths-ignore }}" ]]; then
+          LogshWarn "Both paths and paths-ignore are set. paths takes precedence."
+        fi
+
+        if [[ -n "${{ inputs.paths }}" ]]; then
+          LogshInfo "Apply paths"
+          files_changed=$(echo "${files_changed:?}" | grep -E -f paths.txt) || true
+          LogshDebug "==> files_changed (applied paths) <=="
+          LogshDebug "${files_changed:-(empty)}"
+        elif [[ -n "${{ inputs.paths-ignore }}" ]]; then
+          LogshInfo "Apply paths-ignore"
+          files_changed=$(echo "${files_changed:?}" | grep -Ev -f paths-ignore.txt) || true
+          LogshDebug "==> files_changed (applied paths-ignore) <=="
           LogshDebug "${files_changed:-(empty)}"
         else
-          LogshInfo "paths-ignore is empty"
-          files_changed=$(echo "${diff_files:?}")
+          LogshWarn "paths and paths-ignore are not set."
+          files_changed=$(echo "${files_changed:?}")
         fi
 
         if [[ -z "${files_changed:-}" ]]; then
           LogshInfo "Skip the following steps"
           LogshExec echo "skip=true" >> $GITHUB_OUTPUT
-          exit 0
+        else
+          LogshInfo "Continue the following steps"
+          LogshExec echo "skip=false" >> $GITHUB_OUTPUT
         fi
     - name: DEBUG
       if: always() && ${{ inputs.debug == 'true' }}

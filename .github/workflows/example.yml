@@ -16,8 +16,12 @@ jobs:
       - uses: kunitsucom/github-actions-paths-ignore-alternative@develop
         id: paths-ignore
         with:
+          paths: |-
+            # If any of these regular expressions match, it returns skip=false
+            # This setting takes precedence over paths-ignore
+            ^action.yml
           paths-ignore: |-
-            # substrings of file paths to ignore written in regular expressions
+            # If any of these regular expressions match, it returns skip=true
             ^.github/
             ^.*\.md$
             ^.*\.log$
